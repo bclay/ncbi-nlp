@@ -4,11 +4,11 @@ from nltk.tokenize import RegexpTokenizer
 #initialize
 
 #create an array of tokens
-def create_tokens(string):
+def create_tokens(str):
 	tokenizer = RegexpTokenizer(r'\w+')
-	words = tokenizer.tokenize(string)
+	words = tokenizer.tokenize(str)
 	lc_words = [w.lower() for w in words]
 	return lc_words
 
-create_tokens("This is a sentence")
+print create_tokens("This is a sentence.")
 	
