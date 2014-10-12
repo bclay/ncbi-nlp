@@ -29,19 +29,34 @@ def rm_words(word_arr):
 #input: array of dictionaries
 #output: only words not repeated between dictionaries
 def rm_overlap(dict_arr):
-	final_dict = {}
+	temp_dict_arr = []
+	overall_dict = {}
 	repeats_dict= {}
 	for d in dict_arr:
+		final_dict = {}
 		for key in d:
-			if key in final_dict:
-				del final_dict[key]
+			if key in overall_dict:
+				if key in final_dict:
+					del final_dict[key]
 				print "repeats"
 				print key
 				repeats_dict[key] = 1
 			else:
 				if key not in repeats_dict:
 					final_dict[key] = 1
-	return final_dict
+					overall_dict[key] = 1
+				else:
+					if key in final_dict:
+						del final_dict[key]
+		temp_dict_arr.append(final_dict)
+	final_arr = []
+	for d in temp_dict_arr:
+		temp_dict = {}
+		for key in d:
+			if key not in repeats_dict:
+				temp_dict[key] = 1
+		final_arr.append(temp_dict)
+	return final_arr
 
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
@@ -53,6 +68,7 @@ def final_steps(para_arr_col):
 		stopless_dict = rm_words(tok_arr)
 		stopless_dict
 		dict_arr.append(stopless_dict)
+		print stopless_dict
 	print "REMOVE OVERLAP"
 	print rm_overlap(dict_arr)
 
