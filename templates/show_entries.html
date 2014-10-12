@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %} 
+    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+      <dl>
+        <dt>Gene:
+        <dd><input type=text size=30 name=title>
+        <dt>Summary:
+        <dd><textarea name=text rows=5 cols=40></textarea>
+        <dt>Collection:
+        <dd><input type=text size=30 name=collec>
+        <dd><input type=submit value=Share>
+      </dl>
+    </form>
+
+  <ul class=entries>
+  {% for entry in entries %}
+    <li><h2>{{ entry.title }} ({{ entry.collec }})</h2>{{ entry.text|safe }}
+  {% else %}
+    <li><em>Unbelievable.  No entries here so far.</em>
+  {% endfor %}
+  </ul>
+  <a href="{{ url_for('compare') }}">Compare</a>
+  <ul class=entries>
+  {% for d in final %}
+    <li><h2>{{ d|safe }}</h2>
+  {% else %}
+    <li><em>Unbelievable.  No comparison here so far.</em>
+  {% endfor %}
+  </ul>
+{% endblock %}
