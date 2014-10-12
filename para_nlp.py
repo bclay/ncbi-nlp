@@ -138,9 +138,16 @@ def compare():
 	cur = g.db.execute('select title, text, collec from entries order by id desc')
 	entries = [dict(title=row[0], text=row[1], collec=row[2]) for row in cur.fetchall()]
 	#"Role in early bone the part embryogenesis."
-	first_arr = []
+	collec_dict = {}
 	for ent in entries:
-		first_arr.append([ent['text'],""])
+		if ent['collec'] in collec_dict:
+			collec_dict[ent['collec']].append(ent['text'])
+		else:
+			collec_dict[ent['collec']] = [ent['text'],""]
+
+	first_arr = []
+	for key in collec_dict:
+		first_arr.append(collec_dict[key])
 	#first_arr = [[entries[0]['text'],""],[entries[1]['text'],""]]
 	arr = final_steps(first_arr)
 	print first_arr
