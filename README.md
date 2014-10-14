@@ -1,4 +1,6 @@
-ncbi-nlp
+ncbi-nlp ("Para Compara")
 ========
 
-Finds important words in text from NCBI gene pages. Flask wrapper for simple UI.
+Won Merck healthcare prize at HackRU Fall 2014.
+
+Finds important words in text samples grouped into categories. Flask wrapper for simple UI.
