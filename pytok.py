@@ -35,14 +35,14 @@ def rm_overlap(dict_arr):
 	temp_dict_arr = []
 	overall_dict = {}
 	repeats_dict= {}
-	print "repeats"
+	f = open('overlap1.txt','w')
 	for d in dict_arr:
 		final_dict = {}
 		for key in d:
 			if key in overall_dict:
 				if key in final_dict:
 					del final_dict[key]
-				print key
+				f.write(key)
 				repeats_dict[key] = 1
 			else:
 				if key not in repeats_dict:
@@ -52,6 +52,7 @@ def rm_overlap(dict_arr):
 					if key in final_dict:
 						del final_dict[key]
 		temp_dict_arr.append(final_dict)
+	f.close()
 	final_arr = []
 	for d in temp_dict_arr:
 		temp_dict = {}
@@ -76,8 +77,10 @@ def final_steps(para_arr_col):
 			tok_arr.extend(create_tokens(para))
 		stopless_dict = rm_words(tok_arr)
 		dict_arr.append(stopless_dict)
-	print "REMOVE OVERLAP"
-	print rm_overlap(dict_arr)
+	final_arr = rm_overlap(dict_arr)
+	f = open('results1.txt','w')
+	f.write(final_arr)
+	f.close()
 
 #sample paragraphs
 ins = "After removal of the precursor signal peptide, proinsulin is post-translationally cleaved into three peptides: the B chain and A chain peptides, which are covalently linked via two disulfide bonds to form insulin, and C-peptide. Binding of insulin to the insulin receptor (INSR) stimulates glucose uptake. A multitude of mutant alleles with phenotypic effects have been identified. There is a read-through gene, INS-IGF2, which overlaps with this gene at the 5' region and with the IGF2 gene at the 3' region. Alternative splicing results in multiple transcript variants. [provided by RefSeq, Jun 2010]"
