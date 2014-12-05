@@ -1,0 +1,46 @@
+Search
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE eSearchResult PUBLIC "-//NLM//DTD esearch 20060628//EN" "http://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd">
+<eSearchResult><Count>56</Count><RetMax>20</RetMax><RetStart>0</RetStart><QueryKey>1</QueryKey><WebEnv>NCID_1_373606377_130.14.22.215_9001_1417807624_1539586105_0MetA0_S_MegaStore_F_1</WebEnv><IdList>
+<Id>20113659</Id>
+<Id>20074456</Id>
+<Id>20046412</Id>
+<Id>20021457</Id>
+<Id>20008883</Id>
+<Id>20008181</Id>
+<Id>19912318</Id>
+<Id>19897276</Id>
+<Id>19895589</Id>
+<Id>19894390</Id>
+<Id>19852204</Id>
+<Id>19839969</Id>
+<Id>19811112</Id>
+<Id>19757309</Id>
+<Id>19749079</Id>
+<Id>19739647</Id>
+<Id>19706339</Id>
+<Id>19665766</Id>
+<Id>19648384</Id>
+<Id>19647860</Id>
+</IdList><TranslationSet><Translation>     <From>asthma[mesh]</From>     <To>"asthma"[MeSH Terms]</To>    </Translation><Translation>     <From>leukotrienes[mesh]</From>     <To>"leukotrienes"[MeSH Terms]</To>    </Translation></TranslationSet><TranslationStack>   <TermSet>    <Term>"asthma"[MeSH Terms]</Term>    <Field>MeSH Terms</Field>    <Count>105895</Count>    <Explode>Y</Explode>   </TermSet>   <TermSet>    <Term>"leukotrienes"[MeSH Terms]</Term>    <Field>MeSH Terms</Field>    <Count>13478</Count>    <Explode>Y</Explode>   </TermSet>   <OP>AND</OP>   <TermSet>    <Term>2009[pdat]</Term>    <Field>pdat</Field>    <Count>871032</Count>    <Explode>N</Explode>   </TermSet>   <OP>AND</OP>  </TranslationStack><QueryTranslation>"asthma"[MeSH Terms] AND "leukotrienes"[MeSH Terms] AND 2009[pdat]</QueryTranslation></eSearchResult>
+
+20113659
+20074456
+20046412
+20021457
+20008883
+20008181
+19912318
+19897276
+19895589
+19894390
+19852204
+19839969
+19811112
+19757309
+19749079
+19739647
+19706339
+19665766
+19648384
+19647860
