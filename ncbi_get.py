@@ -1,23 +1,45 @@
 #imports
 import requests
 import xml.etree.ElementTree as ET
-from Bio import Medline
 
 def get_request():
 	#get a list of pubmed ids
-	db = 'pubmed'
-	#query = 'asthma[mesh]+AND+leukotrienes[mesh]+AND+2009[pdat]'
+	db = 'gene'
+	fetch = 'efetch.fcgi?db='
+	ret = '&rettype=xml'
+	idq = '&id='
+	gid = '1056'
 	base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
-	#url = base+'esearch.fcgi?db='+db+'&term='+query+'&usehistory=y'
-	url = base + 'esearch.fcgi?LinkName=gene_pubmed&from_uid=1056'
+	url = base+fetch+db+idq+gid+ret
 	r = requests.get(url)
 	print "Search"
-	print r.text
+
+	pubids = []
+	root = ET.fromstring(r.text)
+	for comm in root.iter('Entrezgene_comments'):
+		for c1 in comm.iter('Gene-commentary'):
+			for c2 in c1.iter('Gene-commentary_type'):
+				if c2.text == '254':
+					for c5 in c1.iter('PubMedId'):
+						pubids.append(c5.text)
+
+
+
+
 	#get abstracts from the pubmed ids
-	#print 'doing something'
-	#pid = '20113659'
-	#url = base+'efetch.fcgi?db='+db+'&id='+pid+'&rettype=xml'
-	#r2 = requests.get(url)
+	db = 'pubmed'
+	print 'doing something'
+	for pid in pubids:
+		print pid
+		url = base+fetch+db+idq+pid+ret
+		r2 = requests.get(url)
+		print r2.text.encode('ascii', 'ignore')
+		root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
+		#for abst in root2.iter('Abstract'):
+		#	for sec in abst.iter('AbstractText'):
+		#		print sec.text
+
+
 	#print 'through request'
 	#print r2.text
 	#lines = r2.text.split("\n")
@@ -38,10 +60,7 @@ def get_request():
 
 # useful pubmed parsing code
 
-	#root2 = ET.fromstring(r2.text)
-	#for abst in root2.iter('Abstract'):
-	#	for sec in abst.iter('AbstractText'):
-	#		print sec.text
+	
 
 
 	#iterate through ids and return abstracts
@@ -49,7 +68,7 @@ def get_request():
 	#for pubid in root.iter('Id'):
 		#print pubid.text
 
-
+#24062244
 
 
 get_request()
