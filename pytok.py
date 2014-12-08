@@ -65,7 +65,8 @@ def rm_overlap(dict_arr):
 					#if key in temp_dict:
 						#del temp_dict[key]
 		sorted_dict = sorted(temp_dict.items(), key=operator.itemgetter(1))
-		final_arr.append(sorted_dict)
+		rev_arr.append(sorted_dict)
+		final_arr = rev_arr.reverse()
 	return final_arr
 
 #the over-arching steps that bring together all the functions
@@ -78,7 +79,7 @@ def final_steps(para_arr_col):
 		stopless_dict = rm_words(tok_arr)
 		dict_arr.append(stopless_dict)
 	final_arr = rm_overlap(dict_arr)
-	f = open('results1.txt','w')
+	f = open('results2.txt','w')
 	f.write(final_arr)
 	f.close()
 

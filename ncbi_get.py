@@ -12,7 +12,6 @@ def get_request():
 	base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 	url = base+fetch+db+idq+gid+ret
 	r = requests.get(url)
-	print "Search"
 
 	pubids = []
 	root = ET.fromstring(r.text)
@@ -28,16 +27,13 @@ def get_request():
 
 	#get abstracts from the pubmed ids
 	db = 'pubmed'
-	print 'doing something'
 	for pid in pubids:
-		print pid
 		url = base+fetch+db+idq+pid+ret
 		r2 = requests.get(url)
-		print r2.text.encode('ascii', 'ignore')
 		root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
-		#for abst in root2.iter('Abstract'):
-		#	for sec in abst.iter('AbstractText'):
-		#		print sec.text
+		for abst in root2.iter('Abstract'):
+			for sec in abst.iter('AbstractText'):
+				print sec.text
 
 
 	#print 'through request'
@@ -71,4 +67,10 @@ def get_request():
 #24062244
 
 
-get_request()
+#get_request()
+
+
+def get_entrez(arr):
+	pass
+
+get_entrez([['amy2']])
