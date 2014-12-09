@@ -2,14 +2,18 @@
 import requests
 import xml.etree.ElementTree as ET
 
+base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
+fetch = 'efetch.fcgi?db='
+idq = '&id='
+ret = '&rettype=xml'
+search = 'esearch.fcgi?db='
+term = '&term='
+
 def get_request():
 	#get a list of pubmed ids
 	db = 'gene'
-	fetch = 'efetch.fcgi?db='
-	ret = '&rettype=xml'
-	idq = '&id='
 	gid = '1056'
-	base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
+	
 	url = base+fetch+db+idq+gid+ret
 	r = requests.get(url)
 
@@ -71,6 +75,28 @@ def get_request():
 
 
 def get_entrez(arr):
-	pass
+	db = 'gene'
+	organism = '+AND+("Homo%20sapiens"[porgn:__txid9606])+&usehistory=y'
 
-get_entrez([['amy2']])
+	for in_arr in arr:
+		for gene in in_arr:
+			url = base+search+db+term+gene+organism
+			r = requests.get(url)
+			root = ET.fromstring(r.text)
+			string = "\t\t\t\t\t"+gene
+			print string
+			for gid in root.iter('Id'):
+				print gid.text
+
+				url2 = base+fetch+db+idq+gid.text+ret
+				r2 = requests.get(url2)
+				root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
+				for loc in root2.iter('Gene-ref_locus'):
+					if gene.lower() == loc.text.lower():
+						print loc.text.lower()
+				for ref in root2.iter('Gene-ref_syn'):
+					for refe in ref.iter('Gene-ref_syn_E'):
+						if gene.lower() == refe.text.lower():
+							print refe.text.lower()
+
+get_entrez([['amy2','cel'],['cmyc']])

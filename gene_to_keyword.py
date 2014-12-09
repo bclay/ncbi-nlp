@@ -3,6 +3,52 @@ import nltk
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 import operator
+import requests
+import xml.etree.ElementTree as ET
+import pickle
+
+base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
+fetch = 'efetch.fcgi?db='
+idq = '&id='
+ret = '&rettype=xml'
+search = 'esearch.fcgi?db='
+term = '&term='
+
+def get_entrez(arr):
+	eids_out = []
+	report = []
+	db = 'gene'
+	organism = '+AND+("Homo%20sapiens"[porgn:__txid9606])+&usehistory=y'
+
+	f = open('report.txt','w')
+
+	for in_arr in arr:
+		reporting_dict = {}
+		for gene in in_arr:
+			print gene
+			eid_arr = []
+			url = base+search+db+term+gene+organism
+			r = requests.get(url)
+			root = ET.fromstring(r.text)
+			for gid in root.iter('Id'):
+				print gid.text
+				url2 = base+fetch+db+idq+gid.text+ret
+				r2 = requests.get(url2)
+				root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
+				for loc in root2.iter('Gene-ref_locus'):
+					if gene.lower() == loc.text.lower():
+						 eid_arr.append(gid.text)
+				for ref in root2.iter('Gene-ref_syn'):
+					for refe in ref.iter('Gene-ref_syn_E'):
+						if gene.lower() == refe.text.lower():
+							eid_arr.append(gid.text)
+			reporting_dict[gene] = eid_arr
+			print eid_arr
+			line = gene+'\t'+str(len(eid_arr))+'\n'
+			f.write(line)
+		eids_out.append(reporting_dict)
+	f.close()
+	return eids_out
 
 #create an array of tokens
 #input: string
@@ -82,3 +128,26 @@ def final_steps(para_arr_col):
 	f = open('get_out/results2.txt','w')
 	f.write(final_arr)
 	f.close()
+
+#runs all the code together, saving parts in the middle
+#with pickle
+#take in a 2D array of gene names
+#return 42
+def gene_to_keywords(input_arr):
+	get_entrez(input_arr)
+	return 42
+
+#step-by-step to be used with pickle
+def gene_to_kw_pickle():
+	pass
+
+#preparing input
+f2 = ['amy2', 'bmp7', 'cel', 'cpa1', 'ctrl', 'dll1', 'ela', 'nr5a2', 'p2rx1', 'pnlip', 'prss1', 'ptpn6', 'rbpj', 'rbpjl', 'rhov']
+f3 = ['cmyc', 'hdac1', 'insm1', 'irx1', 'irx2', 'mnx1', 'myt1', 'neurod2', 'phox2b', 'smad7', 'sst', 'tm4sf4']
+f4 = ['atf2', 'atf3', 'egr1', 'foxo1', 'g6pc2', 'glp1r', 'rbp4', 'slc2a2']
+f5 = ['ccna2', 'ccnd2', 'cdk4', 'chgb', 'dnmt1a', 'foxm1', 'ia2', 'irs2', 'mecp2', 'nfatc1', 'slc30a8', 'tnfa']
+
+
+#code that's actually run
+with open('pic_get_entrez.txt','wb') as fi:
+	pickle.dump(gene_to_keywords([f2,f3,f4,f5]),fi)
