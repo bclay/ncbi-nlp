@@ -14,13 +14,18 @@ ret = '&rettype=xml'
 search = 'esearch.fcgi?db='
 term = '&term='
 
+#takes in a 2d array of gene names
+#returns an array of dictionaries of arrays
+#outer array should have 4 dicts, represent the groups/figures
+#keys are gene names
+#values are arrays of entrez ids representing each gene name
 def get_entrez(arr):
 	eids_out = []
 	report = []
 	db = 'gene'
 	organism = '+AND+("Homo%20sapiens"[porgn:__txid9606])+&usehistory=y'
 
-	f = open('report.txt','w')
+	f = open('report1.txt','w')
 
 	for in_arr in arr:
 		reporting_dict = {}
@@ -49,6 +54,48 @@ def get_entrez(arr):
 		eids_out.append(reporting_dict)
 	f.close()
 	return eids_out
+
+#keeps track of structure for getting abstracts
+#returns a file of similar structure, and array of dictionaries of arrays
+def abstr_wrapper(entrez):
+	outer = []
+	for fig in entrez:
+		d = {}
+		for gname in fig:
+			abstracts = []
+			for gid in gname:
+				abstracts.append(get_abstr(gid))
+			d[gname] = abstracts
+
+#takes in a gene entrez id
+#returns all related pubmed abstracts
+def get_abstr(gid):
+	#get a list of pubmed ids
+	db = 'gene'
+	url = base+fetch+db+idq+gid+ret
+	r = requests.get(url)
+	pubids = []
+	root = ET.fromstring(r.text)
+	for comm in root.iter('Entrezgene_comments'):
+		for c1 in comm.iter('Gene-commentary'):
+			for c2 in c1.iter('Gene-commentary_type'):
+				if c2.text == '254':
+					for c5 in c1.iter('PubMedId'):
+						pubids.append(c5.text)
+
+	#get abstracts from the pubmed ids
+	out_arr = []
+	db = 'pubmed'
+	for pid in pubids:
+		url = base+fetch+db+idq+pid+ret
+		r2 = requests.get(url)
+		root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
+		for abst in root2.iter('Abstract'):
+			for sec in abst.iter('AbstractText'):
+				out_arr.append(sec.text)
+
+	return out_arr
+
 
 #create an array of tokens
 #input: string
@@ -134,7 +181,10 @@ def final_steps(para_arr_col):
 #take in a 2D array of gene names
 #return 42
 def gene_to_keywords(input_arr):
-	get_entrez(input_arr)
+	#creates an array with dictionaries for figures
+	#and gene names in each category
+	entrez = get_entrez(input_arr)
+	abstr = abstr_wrapper(entrez)
 	return 42
 
 #step-by-step to be used with pickle
