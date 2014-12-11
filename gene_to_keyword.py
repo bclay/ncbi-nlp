@@ -134,14 +134,15 @@ def rm_overlap(dict_arr):
 	temp_dict_arr = []
 	overall_dict = {}
 	repeats_dict= {}
-	f = open('overlap1.txt','w')
+	f = open('overlap8.txt','w')
 	for d in dict_arr:
 		final_dict = {}
 		for key in d:
 			if key in overall_dict:
 				if key in final_dict:
 					del final_dict[key]
-				f.write(key)
+				kline = key + '\n'
+				f.write(kline)
 				repeats_dict[key] = 1
 			else:
 				if key not in repeats_dict:
@@ -163,21 +164,24 @@ def rm_overlap(dict_arr):
 				#if rep in key:
 					#if key in temp_dict:
 						#del temp_dict[key]
+		print temp_dict
 		sorted_dict = sorted(temp_dict.items(), key=operator.itemgetter(1))
-		rev_arr.append(sorted_dict)
-		final_arr = rev_arr.reverse()
+		final_arr.append(sorted_dict)
 	return final_arr
 
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
+	print 'in final steps'
 	dict_arr = []
 	for d in para_arr_col:
+		tok_arr = []
 		for para_arr in d:
-			tok_arr = []
-			for para in para_arr:
-				tok_arr.extend(create_tokens(para))
-			stopless_dict = rm_words(tok_arr)
-			dict_arr.append(stopless_dict)
+			print '\t\t\t\t', para_arr
+			for para in d[para_arr]:
+				for p in para:
+					tok_arr.extend(create_tokens(p))
+		stopless_dict = rm_words(tok_arr)
+		dict_arr.append(stopless_dict)
 	final_arr = rm_overlap(dict_arr)
 	return final_arr
 
@@ -208,8 +212,14 @@ def print_pickle(filename):
 			for a in fig[k]:
 				print a
 
+def print_pickle2(filename):
+	abstr = []
+	with open(filename, 'rb') as f:
+		abstr = pickle.load(f)
+	print abstr
+
 def pretty_out(final):
-	f = open('results4.txt','w')
+	f = open('results5.txt','w')
 	for d in final:
 		f.write('\t\t\tNEW FIGURE \n')
 		for k in d:
@@ -246,12 +256,12 @@ f5 = ['ccna2', 'ccnd2', 'cdk4', 'chgb', 'dnmt1a', 'foxm1', 'ia2', 'irs2', 'mecp2
 #	pickle.dump(abstracts,fi)
 with open('pic_get_abstr5.txt','rb') as f:
 	abstr = pickle.load(f)
-
-#print_pickle('pic_get_abstr5.txt')
-final = final_steps(abstracts)
-
-with open('pic_get_words5.txt','wb') as fi2:
+#print abstr
+final = final_steps(abstr)
+print 'final steps done'
+print final
+with open('pic_get_words8.txt','wb') as fi2:
 	pickle.dump(final,fi2)
-
+print_pickle2('pic_get_words8.txt')
 #pretty_out(final)
 
