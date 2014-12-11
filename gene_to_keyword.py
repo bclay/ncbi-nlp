@@ -25,7 +25,7 @@ def get_entrez(arr):
 	db = 'gene'
 	organism = '+AND+("Homo%20sapiens"[porgn:__txid9606])+&usehistory=y'
 
-	f = open('report1.txt','w')
+	f = open('report5.txt','w')
 
 	for in_arr in arr:
 		reporting_dict = {}
@@ -36,7 +36,7 @@ def get_entrez(arr):
 			r = requests.get(url)
 			root = ET.fromstring(r.text)
 			for gid in root.iter('Id'):
-				print gid.text
+				#print gid.text
 				url2 = base+fetch+db+idq+gid.text+ret
 				r2 = requests.get(url2)
 				root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
@@ -49,7 +49,10 @@ def get_entrez(arr):
 							eid_arr.append(gid.text)
 			reporting_dict[gene] = eid_arr
 			print eid_arr
-			line = gene+'\t'+str(len(eid_arr))+'\n'
+			line = gene+'\t'+str(len(eid_arr))
+			for g in eid_arr:
+				line += '\t' + g
+			line += '\n'
 			f.write(line)
 		eids_out.append(reporting_dict)
 	f.close()
@@ -62,10 +65,13 @@ def abstr_wrapper(entrez):
 	for fig in entrez:
 		d = {}
 		for gname in fig:
+			print gname
 			abstracts = []
 			for gid in gname:
 				abstracts.append(get_abstr(gid))
 			d[gname] = abstracts
+		outer.append(d)
+	return outer
 
 #takes in a gene entrez id
 #returns all related pubmed abstracts
@@ -165,16 +171,16 @@ def rm_overlap(dict_arr):
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
 	dict_arr = []
-	for para_arr in para_arr_col:
-		tok_arr = []
-		for para in para_arr:
-			tok_arr.extend(create_tokens(para))
-		stopless_dict = rm_words(tok_arr)
-		dict_arr.append(stopless_dict)
+	for d in para_arr_col:
+		for para_arr in d:
+			tok_arr = []
+			for para in para_arr:
+				tok_arr.extend(create_tokens(para))
+			stopless_dict = rm_words(tok_arr)
+			dict_arr.append(stopless_dict)
 	final_arr = rm_overlap(dict_arr)
-	f = open('get_out/results2.txt','w')
-	f.write(final_arr)
-	f.close()
+	return final_arr
+
 
 #runs all the code together, saving parts in the middle
 #with pickle
@@ -191,13 +197,61 @@ def gene_to_keywords(input_arr):
 def gene_to_kw_pickle():
 	pass
 
+def print_pickle(filename):
+	abstr = []
+	with open(filename, 'rb') as f:
+		abstr = pickle.load(f)
+	print abstr
+	for fig in abstr:
+		for k in fig:
+			print k
+			for a in fig[k]:
+				print a
+
+def pretty_out(final):
+	f = open('results4.txt','w')
+	for d in final:
+		f.write('\t\t\tNEW FIGURE \n')
+		for k in d:
+			line = k + ': ' + d[k] + '\n'
+			f.write(line)
+	f.close()
+
+
+#safe parsing
+parser = ET.XMLParser()
+parser.entity["nbsp"] = unichr(160)
+
 #preparing input
 f2 = ['amy2', 'bmp7', 'cel', 'cpa1', 'ctrl', 'dll1', 'ela', 'nr5a2', 'p2rx1', 'pnlip', 'prss1', 'ptpn6', 'rbpj', 'rbpjl', 'rhov']
 f3 = ['cmyc', 'hdac1', 'insm1', 'irx1', 'irx2', 'mnx1', 'myt1', 'neurod2', 'phox2b', 'smad7', 'sst', 'tm4sf4']
 f4 = ['atf2', 'atf3', 'egr1', 'foxo1', 'g6pc2', 'glp1r', 'rbp4', 'slc2a2']
 f5 = ['ccna2', 'ccnd2', 'cdk4', 'chgb', 'dnmt1a', 'foxm1', 'ia2', 'irs2', 'mecp2', 'nfatc1', 'slc30a8', 'tnfa']
 
-
+#f2e = {'amy2':[279,280],'bmp7':[655],'cel':[1056],'cpa1':[1357],1506,28514,100506013,2494,5023,5406,5644,11317,171177}
+#f3e = [3642,79192,153572]
+#f4e = []
+#f5e = []
 #code that's actually run
-with open('pic_get_entrez.txt','wb') as fi:
-	pickle.dump(gene_to_keywords([f2,f3,f4,f5]),fi)
+#with open('pic_get_entrez5.txt','wb') as fi:
+	#pickle.dump(get_entrez([f2,f3,f4,f5]),fi)
+#print_pickle('./get_out/pic_get_entrez.txt')
+
+#with open('pic_get_entrez4.txt','rb') as f:
+#	entrez = pickle.load(f)
+#print 'entrez loaded'
+#abstracts = abstr_wrapper(entrez)
+#print 'abstr_wrapper run'
+#with open('pic_get_abstr5.txt','rb') as fi:
+#	pickle.dump(abstracts,fi)
+with open('pic_get_abstr5.txt','rb') as f:
+	abstr = pickle.load(f)
+
+#print_pickle('pic_get_abstr5.txt')
+final = final_steps(abstracts)
+
+with open('pic_get_words5.txt','wb') as fi2:
+	pickle.dump(final,fi2)
+
+#pretty_out(final)
+
