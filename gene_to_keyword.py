@@ -186,6 +186,56 @@ def final_steps(para_arr_col):
 	return final_arr
 
 
+#2.1a
+def get_tf(itemlist):
+  d = {}
+  max_count = 1
+  for word in itemlist:
+    if word in d:
+      d[word] += 1
+      if d[word] > max_count:
+        max_count = d[word]
+    else:
+      d[word] = 1
+  for key in d:
+    d[key] = d[key] / float(max_count)
+  return d
+
+#2.1b
+def get_idf(itemlist):
+  d = {}
+  for doc in itemlist:
+    for word in doc:
+      if word in d:
+        d[word] += 1
+      else:
+        d[word] = 1
+    for key in d:
+      d[key] = math.log1p(float(len(itemlist)) / d[key])
+  d['<UNK>'] = math.log1p(float(len(itemlist)))
+  return d
+
+#2.1c
+def get_top(d, k):
+  sorted_d = sorted(d.items(), key = operator.itemgetter(1))
+  sorted_d.reverse()
+  sorted_list = []
+  for x in range(k):
+    sorted_list.extend((sorted_d[x])[0])
+  return sorted_list
+
+def get_tfidf(dict1, dict2):
+  d = {}
+  for key in dict1:
+    if key in dict2:
+      d[key] = float(dict1[key]) * float(dict2[key])
+    else:
+      d[key] = 0
+  return d
+
+def get_tfidf_top(dict1, dict2, k):
+  return get_top(get_tfidf(dict1, dict2), k)
+
 #runs all the code together, saving parts in the middle
 #with pickle
 #take in a 2D array of gene names
