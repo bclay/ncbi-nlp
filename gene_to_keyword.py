@@ -6,6 +6,7 @@ import operator
 import requests
 import xml.etree.ElementTree as ET
 import pickle
+import math
 
 base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 fetch = 'efetch.fcgi?db='
@@ -182,11 +183,16 @@ def final_steps(para_arr_col):
 					tok_arr.extend(create_tokens(p))
 		stopless_dict = rm_words(tok_arr)
 		dict_arr.append(stopless_dict)
-	final_arr = rm_overlap(dict_arr)
-	return final_arr
+	#idf
+	#for doc in dict_arr:
+	arrs = []
+	for doc in dict_arr:
+		arrs.append(doc.keys())
+	return get_tfidf_top(dict_arr[3], get_idf(arrs), 20)
 
+	#final_arr = rm_overlap(dict_arr)
+	#return final_arr
 
-#2.1a
 def get_tf(itemlist):
   d = {}
   max_count = 1
@@ -201,7 +207,6 @@ def get_tf(itemlist):
     d[key] = d[key] / float(max_count)
   return d
 
-#2.1b
 def get_idf(itemlist):
   d = {}
   for doc in itemlist:
@@ -215,13 +220,16 @@ def get_idf(itemlist):
   d['<UNK>'] = math.log1p(float(len(itemlist)))
   return d
 
-#2.1c
 def get_top(d, k):
+  #print d
   sorted_d = sorted(d.items(), key = operator.itemgetter(1))
+  #sorted_d = sorted(d, key=lambda tup: tup[1])
   sorted_d.reverse()
+  #print sorted_d
   sorted_list = []
   for x in range(k):
-    sorted_list.extend((sorted_d[x])[0])
+    sorted_list.append((sorted_d[x]))
+  #print sorted_list
   return sorted_list
 
 def get_tfidf(dict1, dict2):
@@ -310,8 +318,10 @@ with open('pic_get_abstr5.txt','rb') as f:
 final = final_steps(abstr)
 print 'final steps done'
 print final
-with open('pic_get_words8.txt','wb') as fi2:
-	pickle.dump(final,fi2)
-print_pickle2('pic_get_words8.txt')
+#with open('pic_get_words8.txt','wb') as fi2:
+#	pickle.dump(final,fi2)
+#print_pickle2('pic_get_words8.txt')
 #pretty_out(final)
+#d = {'word':11.1,'other':2.5,'brynn':88,'errrrythang':992}
+#print get_top(d,3)
 
