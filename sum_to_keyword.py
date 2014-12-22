@@ -8,7 +8,6 @@ import xml.etree.ElementTree as ET
 import pickle
 import math
 
-
 #keeps track of structure for getting abstracts
 #returns a file of similar structure, and array of dictionaries of arrays
 def abstr_wrapper(entrez):
@@ -23,9 +22,6 @@ def abstr_wrapper(entrez):
 			d[gname] = abstracts
 		outer.append(d)
 	return outer
-
-
-
 
 #create an array of tokens
 #input: string
@@ -96,25 +92,44 @@ def rm_overlap(dict_arr):
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
 	dict_arr = []
+	stopless_dict = []
+	doc_count = 0
 	for fig in para_arr_col:
 		tok_arr = []
 		for p in fig:
-			tok_arr.extend(create_tokens(p))
-		stopless_dict = rm_words(tok_arr)
+			#tok_arr.append(create_tokens(p))
+			stopless_dict.append(rm_words(create_tokens(p)))
+			doc_count += 1
+		#stopless_dict = rm_words(tok_arr)
 		#print_dict(stopless_dict, 'tf3.txt')
 		#print_dict(stopless_dict)
-		dict_arr.append(stopless_dict)
+		cd = compact_dict(stopless_dict)
+		dict_arr.append(cd)
 	#idf
 	#for doc in dict_arr:
-	arrs = []
-	for doc in dict_arr:
-		arrs.append(doc.keys())
+	#arrs = []
+	#for doc in dict_arr:
+		#arrs.append(doc.keys())
 	res = []
-	idf = get_idf(arrs)
-	print_dict_idf(idf, 'idf4.txt')
+	#print arrs
+	idf = get_idf(dict_arr, doc_count)
+	print_dict_idf(idf, 'idf5.txt')
 	for docc in dict_arr:
 		res.append(get_tfidf_top(docc, idf, 30))
 	return res
+
+#input an array of dictionaries, where all words have independent doc counts
+#combine the dictionaries into one
+#don't add the counts, just take 1 per doc
+def compact_dict(a):
+	cd = {}
+	for d in a:
+		for k in d:
+			if k in cd:
+				cd[k] += 1
+			else:
+				cd[k] = 1
+	return cd
 
 	#final_arr = rm_overlap(dict_arr)
 	#return final_arr
@@ -131,7 +146,6 @@ def print_dict_tf(words, filename):
 			out.write(st)
 	out.close()
 
-
 def print_dict_idf(words, filename):
 	final_arr = []
 	out = open(filename,'w')
@@ -139,10 +153,8 @@ def print_dict_idf(words, filename):
 	for tup in sorted_dict:
 		x, y = tup
 		st = x + ' : ' + str(y) + '\n'
-
 		out.write(st)
 	out.close()
-
 
 def get_tf(itemlist):
   d = {}
@@ -158,17 +170,16 @@ def get_tf(itemlist):
     d[key] = d[key] / float(max_count)
   return d
 
-
-def get_idf(itemlist):
+def get_idf(itemlist, doc_count):
   d = {}
   for doc in itemlist:
     for word in doc:
       if word in d:
-        d[word] += 1
+        d[word] += doc[word]
       else:
-        d[word] = 1
+        d[word] = doc[word]
   for key in d:	
-    d[key] = math.log1p(float(len(itemlist)) / d[key])
+    d[key] = math.log1p(float(doc_count) / d[key])
   return d
 
 def get_top(d, k):
@@ -228,7 +239,7 @@ def print_pickle2(filename):
 	print abstr
 
 def pretty_out(final):
-	f = open('sum_results4.txt','w')
+	f = open('sum_results5.txt','w')
 	for li in final:
 		f.write('\t\t\tNEW FIGURE \n')
 		for w in li:
