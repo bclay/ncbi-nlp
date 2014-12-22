@@ -188,7 +188,10 @@ def final_steps(para_arr_col):
 	arrs = []
 	for doc in dict_arr:
 		arrs.append(doc.keys())
-	return get_tfidf_top(dict_arr[3], get_idf(arrs), 20)
+	res = []
+	for docc in dict_arr:
+		res.append(get_tfidf_top(docc, get_idf(arrs), 50))
+	return res
 
 	#final_arr = rm_overlap(dict_arr)
 	#return final_arr
@@ -277,11 +280,11 @@ def print_pickle2(filename):
 	print abstr
 
 def pretty_out(final):
-	f = open('results5.txt','w')
-	for d in final:
+	f = open('results18.txt','w')
+	for li in final:
 		f.write('\t\t\tNEW FIGURE \n')
-		for k in d:
-			line = k + ': ' + d[k] + '\n'
+		for w in li:
+			line = w[0] + ' : ' + str(w[1]) + '\n'
 			f.write(line)
 	f.close()
 
@@ -317,11 +320,11 @@ with open('pic_get_abstr5.txt','rb') as f:
 #print abstr
 final = final_steps(abstr)
 print 'final steps done'
-print final
+#print final
 #with open('pic_get_words8.txt','wb') as fi2:
 #	pickle.dump(final,fi2)
 #print_pickle2('pic_get_words8.txt')
-#pretty_out(final)
+pretty_out(final)
 #d = {'word':11.1,'other':2.5,'brynn':88,'errrrythang':992}
 #print get_top(d,3)
 
