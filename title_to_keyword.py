@@ -61,22 +61,22 @@ def get_entrez(arr):
 
 #keeps track of structure for getting abstracts
 #returns a file of similar structure, and array of dictionaries of arrays
-def abstr_wrapper(entrez):
+def titles_wrapper(entrez):
 	outer = []
 	for fig in entrez:
 		d = {}
 		for gname in fig:
-			print gname
-			abstracts = []
+			#print gname
+			titles = []
 			for gid in gname:
-				abstracts.append(get_abstr(gid))
-			d[gname] = abstracts
+				titles.append(get_title(gid))
+			d[gname] = titles
 		outer.append(d)
 	return outer
 
 #takes in a gene entrez id
 #returns all related pubmed abstracts
-def get_abstr(gid):
+def get_title(gid):
 	#get a list of pubmed ids
 	db = 'gene'
 	url = base+fetch+db+idq+gid+ret
@@ -97,10 +97,8 @@ def get_abstr(gid):
 		url = base+fetch+db+idq+pid+ret
 		r2 = requests.get(url)
 		root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
-		for abst in root2.iter('Abstract'):
-			for sec in abst.iter('AbstractText'):
-				out_arr.append(sec.text)
-
+		for title in root2.iter('ArticleTitle'):
+			out_arr.append(title.text)
 	return out_arr
 
 
@@ -172,45 +170,32 @@ def rm_overlap(dict_arr):
 
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
-	#print 'in final steps'
 	dict_arr = []
-	#for d in para_arr_col:
-		#tok_arr = []
-		#for para_arr in d:
-			#print '\t\t\t\t', para_arr
-			#for para in d[para_arr]:
-				#for p in para:
-					#tok_arr.extend(create_tokens(p))
-		#stopless_dict = rm_words(tok_arr)
-		#dict_arr.append(stopless_dict)
-
-
-	stopless_dict = []
 	doc_count = 0
+	#print para_arr_col
 	for fig in para_arr_col:
+		stopless_dict = []
 		tok_arr = []
 		for gene in fig:
-			for para in gene:
-				print para
-				#tok_arr.append(create_tokens(p))
-				stopless_dict.append(rm_words(create_tokens(para)))
-				doc_count += 1
-		#stopless_dict = rm_words(tok_arr)
-		#print_dict(stopless_dict, 'tf3.txt')
-		#print_dict(stopless_dict)
+			#print gene
+			for group in fig[gene]:
+				for title in group:
+					if title:
+						#print title
+						stopless_dict.append(rm_words(create_tokens(title)))
+						doc_count += 1
+
 		cd = compact_dict(stopless_dict)
-		print cd
+		#print cd
 		dict_arr.append(cd)
 	idf = get_idf(dict_arr, doc_count)
-	print_dict_idf(idf, 'idf_abs1.txt')
+	print_dict_idf(idf, 'idf_title1.txt')
 	res = []
 	for docc in dict_arr:
-		print docc
+		#print docc
 		res.append(get_tfidf_top(docc, idf, 30))
 	return res
 
-	#final_arr = rm_overlap(dict_arr)
-	#return final_arr
 
 #input an array of dictionaries, where all words have independent doc counts
 #combine the dictionaries into one
@@ -334,7 +319,7 @@ def print_pickle2(filename):
 	print abstr
 
 def pretty_out(final):
-	f = open('newidf1.txt','w')
+	f = open('titles1.txt','w')
 	for li in final:
 		f.write('\t\t\tNEW FIGURE \n')
 		for w in li:
@@ -359,24 +344,26 @@ f5 = ['ccna2', 'ccnd2', 'cdk4', 'chgb', 'dnmt1a', 'foxm1', 'ia2', 'irs2', 'mecp2
 #f5e = []
 #code that's actually run
 #with open('pic_get_entrez5.txt','wb') as fi:
-	#pickle.dump(get_entrez([f2,f3,f4,f5]),fi)
-#print_pickle('./get_out/pic_get_entrez.txt')
+#	pickle.dump(get_entrez([f2,f3,f4,f5]),fi)
+#print_pickle2('./get_out/pic_get_entrez4.txt')
 
-#with open('pic_get_entrez4.txt','rb') as f:
+#with open('get_out/pic_get_entrez4.txt','rb') as f:
 #	entrez = pickle.load(f)
 #print 'entrez loaded'
-#abstracts = abstr_wrapper(entrez)
-#print 'abstr_wrapper run'
-#with open('pic_get_abstr5.txt','rb') as fi:
-#	pickle.dump(abstracts,fi)
-with open('pic_get_abstr5.txt','rb') as f:
-	abstr = pickle.load(f)
-##print abstr
-final = final_steps(abstr)
-###print 'final steps done'
-#print final
-#with open('pic_get_words8.txt','wb') as fi2:
-#	pickle.dump(final,fi2)
+#titles = titles_wrapper(entrez)
+#print 'titles_wrapper run'
+
+#with open('get_out/pic_get_titles1.txt','wb') as fi:
+#	pickle.dump(titles,fi)
+#print titles
+with open('get_out/pic_get_titles1.txt','rb') as f:
+	titles = pickle.load(f)
+#print titles
+final = final_steps(titles)
+print 'final steps done'
+print final
+with open('get_out/pic_get_twords1.txt','wb') as fi2:
+	pickle.dump(final,fi2)
 #print_pickle2('pic_get_words8.txt')
 pretty_out(final)
 #d = {'word':11.1,'other':2.5,'brynn':88,'errrrythang':992}
