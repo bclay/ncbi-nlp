@@ -66,7 +66,7 @@ def titles_wrapper(entrez):
 	for fig in entrez:
 		d = {}
 		for gname in fig:
-			#print gname
+			print gname
 			titles = []
 			for gid in gname:
 				titles.append(get_title(gid))
@@ -97,8 +97,11 @@ def get_title(gid):
 		url = base+fetch+db+idq+pid+ret
 		r2 = requests.get(url)
 		root2 = ET.fromstring(r2.text.encode('ascii', 'ignore'))
-		for title in root2.iter('ArticleTitle'):
-			out_arr.append(title.text)
+		for mesh in root2.iter('MeshHeading'):
+			for descr in mesh.iter('DescriptorName'):
+				out_arr.append(descr.text)
+			for quali in mesh.iter('QualifierName'):
+				out_arr.append(quali.text)
 	return out_arr
 
 
@@ -189,7 +192,7 @@ def final_steps(para_arr_col):
 		#print cd
 		dict_arr.append(cd)
 	idf = get_idf(dict_arr, doc_count)
-	print_dict_idf(idf, 'idf_title2.txt')
+	print_dict_idf(idf, 'idf_mesh1.txt')
 	res = []
 	for docc in dict_arr:
 		#print docc
@@ -258,7 +261,7 @@ def get_idf(itemlist, doc_count):
       else:
         d[word] = doc[word]
   for key in d:	
-    d[key] = math.log10(float(doc_count) / d[key])
+    d[key] = math.log1p(float(doc_count) / d[key])
   return d
 
 def get_top(d, k):
@@ -319,7 +322,7 @@ def print_pickle2(filename):
 	print abstr
 
 def pretty_out(final):
-	f = open('titles2.txt','w')
+	f = open('mesh1.txt','w')
 	for li in final:
 		f.write('\t\t\tNEW FIGURE \n')
 		for w in li:
@@ -347,25 +350,25 @@ f5 = ['ccna2', 'ccnd2', 'cdk4', 'chgb', 'dnmt1a', 'foxm1', 'ia2', 'irs2', 'mecp2
 #	pickle.dump(get_entrez([f2,f3,f4,f5]),fi)
 #print_pickle2('./get_out/pic_get_entrez4.txt')
 
-with open('get_out/pic_get_entrez4.txt','rb') as f:
-	entrez = pickle.load(f)
-print 'entrez loaded'
-titles = titles_wrapper(entrez)
-print 'titles_wrapper run'
+#with open('get_out/pic_get_entrez4.txt','rb') as f:
+#	entrez = pickle.load(f)
+#print 'entrez loaded'
+#titles = titles_wrapper(entrez)
+#print 'titles_wrapper run'
 
-with open('get_out/pic_get_titles1.txt','wb') as fi:
-	pickle.dump(titles,fi)
+#with open('mesh/pic_get_mesh1.txt','wb') as fi:
+#	pickle.dump(titles,fi)
 #print titles
-#with open('get_out/pic_get_titles1.txt','rb') as f:
-#	titles = pickle.load(f)
+with open('mesh/pic_get_mesh1.txt','rb') as f:
+	titles = pickle.load(f)
 #print titles
-#final = final_steps(titles)
-#print 'final steps done'
-#print final
-#with open('get_out/pic_get_twords1.txt','wb') as fi2:
-	#pickle.dump(final,fi2)
+final = final_steps(titles)
+##print 'final steps done'
+##print final
+##with open('get_out/pic_get_twords1.txt','wb') as fi2:
+##	pickle.dump(final,fi2)
 #print_pickle2('pic_get_words8.txt')
-#pretty_out(final)
+pretty_out(final)
 #d = {'word':11.1,'other':2.5,'brynn':88,'errrrythang':992}
 #print get_top(d,3)
 

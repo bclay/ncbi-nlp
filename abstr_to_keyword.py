@@ -172,45 +172,31 @@ def rm_overlap(dict_arr):
 
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
-	#print 'in final steps'
 	dict_arr = []
-	#for d in para_arr_col:
-		#tok_arr = []
-		#for para_arr in d:
-			#print '\t\t\t\t', para_arr
-			#for para in d[para_arr]:
-				#for p in para:
-					#tok_arr.extend(create_tokens(p))
-		#stopless_dict = rm_words(tok_arr)
-		#dict_arr.append(stopless_dict)
-
-
-	stopless_dict = []
 	doc_count = 0
+	#print para_arr_col
 	for fig in para_arr_col:
+		stopless_dict = []
 		tok_arr = []
 		for gene in fig:
-			for para in gene:
-				print para
-				#tok_arr.append(create_tokens(p))
-				stopless_dict.append(rm_words(create_tokens(para)))
-				doc_count += 1
-		#stopless_dict = rm_words(tok_arr)
-		#print_dict(stopless_dict, 'tf3.txt')
-		#print_dict(stopless_dict)
+			#print gene
+			for group in fig[gene]:
+				for title in group:
+					if title:
+						#print title
+						stopless_dict.append(rm_words(create_tokens(title)))
+						doc_count += 1
+
 		cd = compact_dict(stopless_dict)
-		print cd
+		#print cd
 		dict_arr.append(cd)
 	idf = get_idf(dict_arr, doc_count)
-	print_dict_idf(idf, 'idf_abs1.txt')
+	print_dict_idf(idf, 'idf_abstr1.txt')
 	res = []
 	for docc in dict_arr:
-		print docc
+		#print docc
 		res.append(get_tfidf_top(docc, idf, 30))
 	return res
-
-	#final_arr = rm_overlap(dict_arr)
-	#return final_arr
 
 #input an array of dictionaries, where all words have independent doc counts
 #combine the dictionaries into one
@@ -284,7 +270,7 @@ def get_top(d, k):
   #print sorted_d
   sorted_list = []
   for x in range(k):
-    print x
+    #print x
     sorted_list.append((sorted_d[x]))
   #print sorted_list
   return sorted_list
@@ -369,7 +355,7 @@ f5 = ['ccna2', 'ccnd2', 'cdk4', 'chgb', 'dnmt1a', 'foxm1', 'ia2', 'irs2', 'mecp2
 #print 'abstr_wrapper run'
 #with open('pic_get_abstr5.txt','rb') as fi:
 #	pickle.dump(abstracts,fi)
-with open('pic_get_abstr5.txt','rb') as f:
+with open('abstr/pic_get_abstr5.txt','rb') as f:
 	abstr = pickle.load(f)
 ##print abstr
 final = final_steps(abstr)

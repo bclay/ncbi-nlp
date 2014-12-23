@@ -117,7 +117,7 @@ def final_steps(para_arr_col):
 	#print arrs
 	#dict_arr
 	idf = get_idf(dict_arr, doc_count)
-	print_dict_idf(idf, 'idf6.txt')
+	print_dict_idf(idf, 'idf_sum7.txt')
 	for docc in dict_arr:
 		#print docc
 		res.append(get_tfidf_top(docc, idf, 30))
@@ -184,7 +184,7 @@ def get_idf(itemlist, doc_count):
       else:
         d[word] = doc[word]
   for key in d:	
-    d[key] = math.log1p(float(doc_count) / d[key])
+    d[key] = math.log10(float(doc_count) / d[key])
   return d
 
 def get_top(d, k):
@@ -244,7 +244,7 @@ def print_pickle2(filename):
 	print abstr
 
 def pretty_out(final):
-	f = open('sum_results6.txt','w')
+	f = open('sum_results7.txt','w')
 	for li in final:
 		f.write('\t\t\tNEW FIGURE \n')
 		for w in li:
