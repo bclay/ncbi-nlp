@@ -92,9 +92,9 @@ def rm_overlap(dict_arr):
 #the over-arching steps that bring together all the functions
 def final_steps(para_arr_col):
 	dict_arr = []
-	stopless_dict = []
 	doc_count = 0
 	for fig in para_arr_col:
+		stopless_dict = []
 		tok_arr = []
 		for p in fig:
 			#tok_arr.append(create_tokens(p))
@@ -103,7 +103,10 @@ def final_steps(para_arr_col):
 		#stopless_dict = rm_words(tok_arr)
 		#print_dict(stopless_dict, 'tf3.txt')
 		#print_dict(stopless_dict)
+		#print stopless_dict
+		#print doc_count
 		cd = compact_dict(stopless_dict)
+		#print cd
 		dict_arr.append(cd)
 	#idf
 	#for doc in dict_arr:
@@ -112,9 +115,11 @@ def final_steps(para_arr_col):
 		#arrs.append(doc.keys())
 	res = []
 	#print arrs
+	#dict_arr
 	idf = get_idf(dict_arr, doc_count)
-	print_dict_idf(idf, 'idf5.txt')
+	print_dict_idf(idf, 'idf6.txt')
 	for docc in dict_arr:
+		#print docc
 		res.append(get_tfidf_top(docc, idf, 30))
 	return res
 
@@ -129,6 +134,8 @@ def compact_dict(a):
 				cd[k] += 1
 			else:
 				cd[k] = 1
+			#print k
+			#print cd[k]
 	return cd
 
 	#final_arr = rm_overlap(dict_arr)
@@ -142,8 +149,6 @@ def print_dict_tf(words, filename):
 	for tup in final_arr:
 		x, y = tup
 		st = x + ' : ' + str(y) + '\n'
-		if y > 1:
-			out.write(st)
 	out.close()
 
 def print_dict_idf(words, filename):
@@ -239,7 +244,7 @@ def print_pickle2(filename):
 	print abstr
 
 def pretty_out(final):
-	f = open('sum_results5.txt','w')
+	f = open('sum_results6.txt','w')
 	for li in final:
 		f.write('\t\t\tNEW FIGURE \n')
 		for w in li:
